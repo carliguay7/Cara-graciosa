@@ -1,0 +1,94 @@
+Aquí tens els codi de la meva cara graciosa.
+VAMPIR:
+import pygame
+import sys
+import random
+import math
+
+# Colors
+NEGRO = (0, 0, 0)
+WHITE = (255, 255, 255)
+ROJO = (255, 0, 0)
+Color_cara = (245, 240, 230)
+
+
+pygame.init()
+pantalla = pygame.display.set_mode((800, 600))
+pygame.display.set_caption('Cara Vampiro con Capucha')
+
+gotas = [{'x': random.choice([370, 430]), 'y': 410, 'vel': random.uniform(2, 4)} for _ in range(5)]
+
+# Bucle
+clock = pygame.time.Clock()
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    pantalla.fill(NEGRO)
+
+    # Posició del mouse
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+
+    # Posició dels ulls
+    ojo_izq = (330, 230)
+    ojo_der = (470, 230)
+
+    # Cálcul de la posició de les pupiles
+    def calcular_pupila(ojo_x, ojo_y):
+        dx = mouse_x - ojo_x
+        dy = mouse_y - ojo_y
+        dist = math.sqrt(dx**2 + dy**2)
+        if dist > 15:
+            dx = dx / dist * 15
+            dy = dy / dist * 15
+        return (ojo_x + int(dx), ojo_y + int(dy))
+
+    pupila_izq = calcular_pupila(*ojo_izq)
+    pupila_der = calcular_pupila(*ojo_der)
+
+
+
+    # Cara
+    pygame.draw.circle(pantalla, Color_cara, (400, 300), 200)
+    pygame.draw.line(pantalla, WHITE, (280, 150), (340, 160), 8)
+    pygame.draw.line(pantalla, WHITE, (460, 160), (520, 150), 8)
+    pygame.draw.polygon(pantalla, WHITE, [(320, 80), (350, 180), (290, 160)])
+    pygame.draw.polygon(pantalla, WHITE, [(480, 80), (450, 180), (510, 160)])
+
+    # Boca
+    pygame.draw.arc(pantalla, WHITE, (293, 215, 300, 293), 3.2, 4, 10)
+    pygame.draw.arc(pantalla, WHITE, (270, 220, 300, 255), 4, 5, 10)
+    pygame.draw.arc(pantalla, WHITE, (215, 206, 300, 293), 5, 6, 10)
+    pygame.draw.polygon(pantalla, WHITE, ((360, 370), (375, 340), (346, 340)))
+    pygame.draw.polygon(pantalla, WHITE, ((440, 370), (454, 340), (426, 340)))
+    pygame.draw.circle(pantalla, WHITE, (400, 300), 200, 400)
+    pygame.draw.ellipse(pantalla, NEGRO, (300, 170, 60, 120), 140)
+    pygame.draw.ellipse(pantalla,NEGRO, (440, 170, 60, 120), 140)
+    pygame.draw.ellipse(pantalla, NEGRO, (300, 340, 200, 120), 140)
+    pygame.draw.polygon(pantalla, WHITE, ((360, 370), (375, 340), (346, 340)))
+    pygame.draw.polygon(pantalla, WHITE, ((440, 370), (454, 340), (426, 340)))
+
+    # Ulls
+    pygame.draw.ellipse(pantalla, NEGRO, (300, 170, 60, 120))  # Ojo izq
+    pygame.draw.ellipse(pantalla, NEGRO, (440, 170, 60, 120))  # Ojo der
+    pygame.draw.circle(pantalla, WHITE, pupila_izq, 15)
+    pygame.draw.circle(pantalla, WHITE, pupila_der, 15)
+
+    # lluna
+    pygame.draw.circle(pantalla, WHITE, (650, 100), 50)
+    pygame.draw.circle(pantalla, NEGRO, (670, 90), 50)
+
+    # Gotes
+    for gota in gotas:
+        pygame.draw.ellipse(pantalla, ROJO, (gota['x'], int(gota['y']), 10, 15))  # Dibuja la gota
+        gota['y'] += gota['vel']  # Mueve la gota hacia abajo
+
+        if gota['y'] > 600:
+            gota['y'] = 410  # Reinicia desde abajo de la boca
+            gota['x'] = random.choice([370, 430])  # Izquierda o derecha de la boca
+            gota['vel'] = random.uniform(2, 4)  # Nueva velocidad
+
+    pygame.display.update()
+    clock.tick(30)  # Control de FPS
